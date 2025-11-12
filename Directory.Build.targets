@@ -18,10 +18,6 @@
     <None Include="$(RepoRoot)assets/icon.png" Pack="true" PackagePath="" Link="icon.png" Condition="Exists('$(RepoRoot)assets/icon.png')" />
   </ItemGroup>
 
-  <PropertyGroup Condition="'$(IsTestProject)' == 'true'">
-    <GenerateDocumentationFile>false</GenerateDocumentationFile>
-  </PropertyGroup>
-
   <PropertyGroup Condition="'$(MSBuildProjectName)' == 'InpcFieldGenerator.Tests'">
     <CollectCoverage>true</CollectCoverage>
     <CoverletOutputFormat>json,lcov,opencover</CoverletOutputFormat>
