@@ -43,11 +43,11 @@ jobs:
           if-no-files-found: error
 
       - name: Push NuGet packages
-        if: secrets.NUGET_API_KEY != ''
+        if: ${{ secrets.NUGET_API_KEY != '' }}
         run: dotnet nuget push "artifacts/packages/*.nupkg" --source https://api.nuget.org/v3/index.json --skip-duplicate --api-key "${{ secrets.NUGET_API_KEY }}"
 
       - name: Publish symbol packages
-        if: secrets.NUGET_API_KEY != ''
+        if: ${{ secrets.NUGET_API_KEY != '' }}
         run: dotnet nuget push "artifacts/packages/*.snupkg" --source https://api.nuget.org/v3/index.json --skip-duplicate --api-key "${{ secrets.NUGET_API_KEY }}"
 
       - name: Create GitHub release
