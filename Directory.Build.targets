@@ -1,8 +1,6 @@
 <Project>
   <PropertyGroup Condition="'$(IsPackable)' == 'true'">
     <GenerateDocumentationFile>true</GenerateDocumentationFile>
-    <Authors>INPC Field Generator maintainers</Authors>
-    <Company>INPC Field Generator</Company>
     <RepositoryUrl>https://github.com/wieslawsoltes/InpcFieldGenerator</RepositoryUrl>
     <RepositoryType>git</RepositoryType>
     <PackageProjectUrl>https://github.com/wieslawsoltes/InpcFieldGenerator</PackageProjectUrl>
@@ -13,17 +11,11 @@
     <IncludeSymbols>true</IncludeSymbols>
     <SymbolPackageFormat>snupkg</SymbolPackageFormat>
     <PackageRequireLicenseAcceptance>false</PackageRequireLicenseAcceptance>
-    <MinVerTagPrefix>v</MinVerTagPrefix>
-    <MinVerDefaultPreReleaseIdentifiers>preview.0</MinVerDefaultPreReleaseIdentifiers>
   </PropertyGroup>
 
   <ItemGroup Condition="'$(IsPackable)' == 'true'">
     <None Include="$(RepoRoot)README.md" Pack="true" PackagePath="" Link="README.md" Condition="Exists('$(RepoRoot)README.md')" />
     <None Include="$(RepoRoot)assets/icon.png" Pack="true" PackagePath="" Link="icon.png" Condition="Exists('$(RepoRoot)assets/icon.png')" />
-    <PackageReference Include="MinVer" Version="5.0.0">
-      <PrivateAssets>all</PrivateAssets>
-      <IncludeAssets>build;buildTransitive</IncludeAssets>
-    </PackageReference>
   </ItemGroup>
 
   <PropertyGroup Condition="'$(IsTestProject)' == 'true'">
