@@ -1,0 +1,49 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <TargetFramework>netstandard2.0</TargetFramework>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>disable</ImplicitUsings>
+    <IsPackable>true</IsPackable>
+    <GenerateDocumentationFile>true</GenerateDocumentationFile>
+    <Description>Incremental source generator that builds INPC change-notification plumbing for ReactiveUI view models.</Description>
+    <PackageTags>roslyn;source-generator;INotifyPropertyChanged;ReactiveUI</PackageTags>
+    <IncludeBuildOutput>false</IncludeBuildOutput>
+    <UseRoslynAnalyzers>true</UseRoslynAnalyzers>
+    <DevelopmentDependency>true</DevelopmentDependency>
+    <EmitCompilerGeneratedFiles Condition="'$(CI)' != ''">true</EmitCompilerGeneratedFiles>
+    <CompilerGeneratedFilesOutputPath Condition="'$(CI)' != ''">$(BaseIntermediateOutputPath)generated</CompilerGeneratedFilesOutputPath>
+    <EnforceExtendedAnalyzerRules>true</EnforceExtendedAnalyzerRules>
+    <NoWarn>$(NoWarn);RS2007;NU5128</NoWarn>
+    <PackageId>InpcFieldGenerator</PackageId>
+    <PackageReleaseNotes>See CHANGELOG for the latest updates.</PackageReleaseNotes>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\InpcFieldGenerator.Abstractions\InpcFieldGenerator.Abstractions.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.CodeAnalysis.Analyzers" Version="3.11.0">
+      <PrivateAssets>all</PrivateAssets>
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+    </PackageReference>
+    <PackageReference Include="Microsoft.CodeAnalysis.CSharp" Version="4.11.0" />
+    <PackageReference Include="System.Collections.Immutable" Version="8.0.0" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Include="$(OutputPath)\$(AssemblyName).dll" Pack="true" PackagePath="analyzers/dotnet/cs" Visible="false" />
+    <None Include="$(OutputPath)\$(AssemblyName).pdb" Pack="true" PackagePath="analyzers/dotnet/cs" Visible="false" Condition="Exists('$(OutputPath)\$(AssemblyName).pdb')" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Include="build\**\*.props" Pack="true" PackagePath="build\%(RecursiveDir)%(Filename)%(Extension)" />
+    <None Include="buildTransitive\**\*.props" Pack="true" PackagePath="buildTransitive\%(RecursiveDir)%(Filename)%(Extension)" />
+    <None Include="buildTransitive\**\*.targets" Pack="true" PackagePath="buildTransitive\%(RecursiveDir)%(Filename)%(Extension)" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <AdditionalFiles Include="AnalyzerReleases.Shipped.md" />
+    <AdditionalFiles Include="AnalyzerReleases.Unshipped.md" />
+  </ItemGroup>
+</Project>

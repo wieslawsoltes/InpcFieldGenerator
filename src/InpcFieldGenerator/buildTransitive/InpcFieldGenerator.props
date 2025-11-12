@@ -1,0 +1,9 @@
+<Project>
+  <PropertyGroup>
+    <InpcFieldGeneratorSetLangVersion Condition="'$(InpcFieldGeneratorSetLangVersion)' == ''">true</InpcFieldGeneratorSetLangVersion>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(InpcFieldGeneratorSetLangVersion)' == 'true' and ('$(LangVersion)' == '' or '$(LangVersion)' == 'default')">
+    <LangVersion>preview</LangVersion>
+  </PropertyGroup>
+</Project>

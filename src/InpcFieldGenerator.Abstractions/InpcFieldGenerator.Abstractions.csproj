@@ -1,0 +1,13 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <TargetFrameworks>netstandard2.0;net8.0;net10.0</TargetFrameworks>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <IsPackable>true</IsPackable>
+    <GenerateDocumentationFile>true</GenerateDocumentationFile>
+    <Description>Attribute definitions and shared abstractions for the INPC Field Generator.</Description>
+    <PackageTags>reactiveui;inotifypropertychanged;source-generator;attributes</PackageTags>
+    <PackageId>InpcFieldGenerator.Abstractions</PackageId>
+    <PackageReleaseNotes>See CHANGELOG for the latest updates.</PackageReleaseNotes>
+  </PropertyGroup>
+</Project>

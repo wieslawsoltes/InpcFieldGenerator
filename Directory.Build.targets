@@ -1,0 +1,59 @@
+<Project>
+  <PropertyGroup Condition="'$(IsPackable)' == 'true'">
+    <GenerateDocumentationFile>true</GenerateDocumentationFile>
+    <Authors>INPC Field Generator maintainers</Authors>
+    <Company>INPC Field Generator</Company>
+    <RepositoryUrl>https://github.com/wieslawsoltes/InpcFieldGenerator</RepositoryUrl>
+    <RepositoryType>git</RepositoryType>
+    <PackageProjectUrl>https://github.com/wieslawsoltes/InpcFieldGenerator</PackageProjectUrl>
+    <PackageLicenseExpression>MIT</PackageLicenseExpression>
+    <PackageReadmeFile>README.md</PackageReadmeFile>
+    <PackageIcon>icon.png</PackageIcon>
+    <PublishRepositoryUrl>true</PublishRepositoryUrl>
+    <IncludeSymbols>true</IncludeSymbols>
+    <SymbolPackageFormat>snupkg</SymbolPackageFormat>
+    <PackageRequireLicenseAcceptance>false</PackageRequireLicenseAcceptance>
+    <MinVerTagPrefix>v</MinVerTagPrefix>
+    <MinVerDefaultPreReleaseIdentifiers>preview.0</MinVerDefaultPreReleaseIdentifiers>
+  </PropertyGroup>
+
+  <ItemGroup Condition="'$(IsPackable)' == 'true'">
+    <None Include="$(RepoRoot)README.md" Pack="true" PackagePath="" Link="README.md" Condition="Exists('$(RepoRoot)README.md')" />
+    <None Include="$(RepoRoot)assets/icon.png" Pack="true" PackagePath="" Link="icon.png" Condition="Exists('$(RepoRoot)assets/icon.png')" />
+    <PackageReference Include="MinVer" Version="5.0.0">
+      <PrivateAssets>all</PrivateAssets>
+      <IncludeAssets>build;buildTransitive</IncludeAssets>
+    </PackageReference>
+  </ItemGroup>
+
+  <PropertyGroup Condition="'$(IsTestProject)' == 'true'">
+    <GenerateDocumentationFile>false</GenerateDocumentationFile>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(MSBuildProjectName)' == 'InpcFieldGenerator.Tests'">
+    <CollectCoverage>true</CollectCoverage>
+    <CoverletOutputFormat>json,lcov,opencover</CoverletOutputFormat>
+    <CoverletOutput>$(MSBuildProjectDirectory)/../artifacts/coverage/InpcFieldGenerator.Tests/coverage</CoverletOutput>
+    <Threshold>100</Threshold>
+    <ThresholdType>line</ThresholdType>
+    <ThresholdStat>Total</ThresholdStat>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(IsTestProject)' != 'true'">
+    <DebugType>portable</DebugType>
+  </PropertyGroup>
+
+  <Target Name="PrintProjectConfiguration" BeforeTargets="CoreCompile" Condition="'$(EnableBuildDiagnostics)' == 'true'">
+    <Message Importance="Low" Text="Project $(MSBuildProjectName) targeting $(TargetFramework)" />
+  </Target>
+
+  <Target Name="GenerateCoverageReport" AfterTargets="Test" Condition="'$(MSBuildProjectName)' == 'InpcFieldGenerator.Tests' and '$(CollectCoverage)' == 'true'">
+    <PropertyGroup>
+      <_CoverageDirectory>$(MSBuildProjectDirectory)/../artifacts/coverage</_CoverageDirectory>
+      <_CoverageReportDirectory>$(_CoverageDirectory)/report</_CoverageReportDirectory>
+    </PropertyGroup>
+    <MakeDir Directories="$(_CoverageReportDirectory)" />
+    <Exec Command="dotnet tool restore" />
+    <Exec Command="dotnet tool run reportgenerator -reports:&quot;$([System.IO.Path]::GetFullPath('$(CoverletOutput).json'))&quot; -targetdir:&quot;$([System.IO.Path]::GetFullPath('$(_CoverageReportDirectory)'))&quot; -reporttypes:&quot;HtmlInline_AzurePipelines;TextSummary&quot;" />
+  </Target>
+</Project>
