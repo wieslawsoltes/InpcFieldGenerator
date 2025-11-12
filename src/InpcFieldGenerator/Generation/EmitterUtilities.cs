@@ -147,8 +147,6 @@ internal static class EmitterUtilities
     internal static string FormatNamespace(INamespaceSymbol namespaceSymbol)
     {
         var text = namespaceSymbol.ToDisplayString(SymbolDisplayFormat.FullyQualifiedFormat);
-        return text.StartsWith("global::", System.StringComparison.Ordinal)
-            ? text.Substring("global::".Length)
-            : text;
+        return DisplayStringUtilities.TrimGlobalPrefix(text);
     }
 }

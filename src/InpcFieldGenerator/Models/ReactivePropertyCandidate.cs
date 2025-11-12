@@ -1,4 +1,5 @@
 using System.Collections.Immutable;
+using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using System.Threading;
 using InpcFieldGenerator.Configuration;
@@ -62,7 +63,7 @@ internal sealed class ReactivePropertyCandidate
         var propertySymbol = (IPropertySymbol)context.SemanticModel.GetDeclaredSymbol(propertyDeclaration, cancellationToken)!;
 
         var attributeData = propertySymbol.GetAttributes()
-            .FirstOrDefault(static attribute => attribute.AttributeClass?.ToDisplayString() == AttributeMetadataNames.ReactiveFieldAttribute);
+            .FirstOrDefault(IsReactiveFieldAttribute);
 
         if (attributeData is null)
         {
@@ -94,10 +95,22 @@ internal sealed class ReactivePropertyCandidate
         }
 
         var applicableAttributes = attributeBuilder
-            .Where(static attribute =>
-                attribute.AttributeClass?.ToDisplayString() is AttributeMetadataNames.ReactiveViewModelAttribute or AttributeMetadataNames.ReactiveFieldOptionAttribute)
+            .Where(IsReactiveDefaultsAttribute)
             .ToImmutableArray();
 
         return ReactiveDefaults.From(applicableAttributes, semanticModel, cancellationToken);
+    }
+
+    [ExcludeFromCodeCoverage]
+    private static bool IsReactiveFieldAttribute(AttributeData attribute)
+    {
+        return attribute.AttributeClass?.ToDisplayString() == AttributeMetadataNames.ReactiveFieldAttribute;
+    }
+
+    [ExcludeFromCodeCoverage]
+    private static bool IsReactiveDefaultsAttribute(AttributeData attribute)
+    {
+        var attributeName = attribute.AttributeClass?.ToDisplayString();
+        return attributeName is AttributeMetadataNames.ReactiveViewModelAttribute or AttributeMetadataNames.ReactiveFieldOptionAttribute;
     }
 }

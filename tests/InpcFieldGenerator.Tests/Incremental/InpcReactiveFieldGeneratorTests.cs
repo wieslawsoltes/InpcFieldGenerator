@@ -7,6 +7,7 @@ using InpcFieldGenerator.Abstractions;
 using InpcFieldGenerator.Incremental;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
+using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Microsoft.CodeAnalysis.Text;
 using Xunit;
 using VerifyTests;
@@ -185,6 +186,61 @@ public static class InpcReactiveFieldGeneratorTests
         var (_, _, generatorDiagnostics) = RunGenerator(source);
 
         generatorDiagnostics.Should().ContainSingle(diagnostic => diagnostic.Id == "INPCFG005");
+    }
+
+    [Fact]
+    public static void Handles_Mixed_Property_Attributes()
+    {
+        const string source = """
+            using System;
+            using InpcFieldGenerator.Abstractions;
+
+            namespace SampleApp;
+
+            public abstract partial class ViewModelBase
+            {
+                protected void RaisePropertyChanged(string propertyName) { }
+            }
+
+            [ReactiveViewModel]
+            public partial class PersonViewModel : ViewModelBase
+            {
+                [Obsolete]
+                [ReactiveField]
+                public partial string FirstName { get; set; }
+            }
+            """;
+
+        var (_, _, diagnostics) = RunGenerator(source);
+
+        diagnostics.Should().BeEmpty();
+    }
+
+    [Fact]
+    public static void DoesNothing_When_ReactiveField_Attribute_Not_Referenced()
+    {
+        const string source = """
+            namespace SampleApp;
+
+            public abstract partial class ViewModelBase
+            {
+                protected void RaisePropertyChanged(string propertyName) { }
+            }
+
+            public partial class PersonViewModel : ViewModelBase
+            {
+                [ReactiveField]
+                public partial string FirstName { get; set; }
+            }
+            """;
+
+        var (driver, _, diagnostics) = RunGeneratorWithoutAttributeReference(source);
+
+        diagnostics.Should().BeEmpty();
+
+        var generatedSources = driver.GetRunResult().Results.SelectMany(result => result.GeneratedSources).ToArray();
+        generatedSources.Should().ContainSingle();
+        generatedSources[0].HintName.Should().Be("ReactiveFieldGenerator.Attributes.g.cs");
     }
 
     [Fact]
@@ -407,6 +463,35 @@ public static class InpcReactiveFieldGeneratorTests
         return (driver, updatedCompilation, diagnostics);
     }
 
+    private static (GeneratorDriver Driver, Compilation Compilation, ImmutableArray<Diagnostic> Diagnostics) RunGeneratorWithoutAttributeReference(string source)
+    {
+        var parseOptions = new CSharpParseOptions(languageVersion: LanguageVersion.Preview);
+        var syntaxTree = CSharpSyntaxTree.ParseText(SourceText.From(source, Encoding.UTF8), parseOptions);
+
+        var references = new[]
+        {
+            MetadataReference.CreateFromFile(typeof(object).Assembly.Location),
+            MetadataReference.CreateFromFile(typeof(Attribute).Assembly.Location),
+            MetadataReference.CreateFromFile(typeof(Enumerable).Assembly.Location),
+        };
+
+        var compilation = CSharpCompilation.Create(
+            assemblyName: "GeneratorTests",
+            syntaxTrees: new[] { syntaxTree },
+            references: references,
+            options: new CSharpCompilationOptions(OutputKind.DynamicallyLinkedLibrary));
+
+        var generator = new InpcReactiveFieldGenerator();
+        var sourceGenerator = generator.AsSourceGenerator();
+        GeneratorDriver driver = CSharpGeneratorDriver.Create(
+            generators: new[] { sourceGenerator },
+            parseOptions: parseOptions);
+
+        driver = driver.RunGeneratorsAndUpdateCompilation(compilation, out var updatedCompilation, out var diagnostics);
+
+        return (driver, updatedCompilation, diagnostics);
+    }
+
     private static string NormalizeLineEndings(string text) => text.Replace("\r\n", "\n", StringComparison.Ordinal);
 
     private static string GetGeneratedSource(GeneratorDriver driver)
@@ -427,5 +512,34 @@ public static class InpcReactiveFieldGeneratorTests
             Scenario = scenario,
             Source = NormalizeLineEndings(source),
         });
+    }
+
+    [Fact]
+    public static void GetAttributeLocation_Returns_Fallback_When_Attribute_Syntax_Null()
+    {
+        var fallback = Location.Create(
+            filePath: "fallback.cs",
+            textSpan: new TextSpan(0, 0),
+            lineSpan: new LinePositionSpan(new LinePosition(0, 0), new LinePosition(0, 0)));
+
+        var result = InpcReactiveFieldGenerator.GetAttributeLocation(null, fallback);
+
+        result.Should().Be(fallback);
+    }
+
+    [Fact]
+    public static void GetAttributeLocation_Returns_Attribute_Location()
+    {
+        const string snippet = "[ReactiveField] class Sample { }";
+        var syntaxTree = CSharpSyntaxTree.ParseText(snippet, new CSharpParseOptions(LanguageVersion.Preview));
+        var attributeSyntax = syntaxTree.GetRoot()
+            .DescendantNodes()
+            .OfType<AttributeSyntax>()
+            .Single();
+        var fallback = Location.None;
+
+        var result = InpcReactiveFieldGenerator.GetAttributeLocation(attributeSyntax, fallback);
+
+        result.Should().Be(attributeSyntax.GetLocation());
     }
 }

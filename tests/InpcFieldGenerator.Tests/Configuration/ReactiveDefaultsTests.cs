@@ -80,6 +80,35 @@ public static class ReactiveDefaultsTests
     }
 
     [Fact]
+    public static void From_Handles_Collection_Spread_In_Assembly_Options()
+    {
+        const string source = """
+            using InpcFieldGenerator.Abstractions;
+
+            [assembly: ReactiveFieldOption(AlsoNotify = ["Direct", ..new[] { "SpreadOne", "SpreadTwo" }])]
+
+            namespace SampleApp;
+
+            [ReactiveViewModel]
+            public partial class OrderViewModel
+            {
+                public string Direct { get; set; } = "";
+                public string SpreadOne { get; set; } = "";
+                public string SpreadTwo { get; set; } = "";
+            }
+            """;
+
+        var compilation = CreateCompilation(source);
+        var typeSymbol = compilation.GetTypeByMetadataName("SampleApp.OrderViewModel");
+        typeSymbol.Should().NotBeNull();
+
+        var semanticModel = compilation.GetSemanticModel(compilation.SyntaxTrees.Single());
+        var defaults = ReactiveDefaults.From(typeSymbol!.GetAttributes().AddRange(compilation.Assembly.GetAttributes()), semanticModel, default);
+
+        defaults.AlsoNotify.Should().ContainInOrder("Direct", "SpreadOne", "SpreadTwo");
+    }
+
+    [Fact]
     public static void From_Ignores_NonArray_AlsoNotify()
     {
         const string source = """

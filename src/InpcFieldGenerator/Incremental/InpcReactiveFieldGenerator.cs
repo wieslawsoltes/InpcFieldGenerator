@@ -178,7 +178,7 @@ public sealed class InpcReactiveFieldGenerator : IIncrementalGenerator
         return false;
     }
 
-    private static Location GetAttributeLocation(AttributeSyntax attributeSyntax, Location fallback)
+    internal static Location GetAttributeLocation(AttributeSyntax? attributeSyntax, Location fallback)
     {
         return attributeSyntax?.GetLocation() ?? fallback;
     }
@@ -186,12 +186,10 @@ public sealed class InpcReactiveFieldGenerator : IIncrementalGenerator
     private static string CreateHintName(INamedTypeSymbol typeSymbol)
     {
         var fullyQualified = typeSymbol.ToDisplayString(SymbolDisplayFormat.FullyQualifiedFormat);
-        var sansGlobal = fullyQualified.StartsWith("global::", StringComparison.Ordinal)
-            ? fullyQualified.Substring("global::".Length)
-            : fullyQualified;
-        var builder = new StringBuilder(sansGlobal.Length + 16);
+        var sanitized = DisplayStringUtilities.TrimGlobalPrefix(fullyQualified);
+        var builder = new StringBuilder(sanitized.Length + 16);
 
-        foreach (var character in sansGlobal)
+        foreach (var character in sanitized)
         {
             builder.Append(char.IsLetterOrDigit(character) ? character : '_');
         }
