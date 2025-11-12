@@ -44,7 +44,7 @@ public static class ReactiveFieldAttributeTests
 
             public class PersonViewModel
             {
-                [ReactiveField(PropertyName = "GivenName", NotifyOnChanging = true, GenerateEqualityCheck = false, AlsoNotify = new[] { "FullName", "FullName" }, ViewModelMember = "NotifyChanged")]
+                [ReactiveField(PropertyName = "GivenName", NotifyOnChanging = true, GenerateEqualityCheck = false, AlsoNotify = ["FullName", "FullName"], ViewModelMember = "NotifyChanged")]
                 public string FirstName { get; set; }
 
                 public string FullName { get; set; }

@@ -24,13 +24,13 @@ public partial class MainViewModel : ViewModelBase
         PropertyChanged += OnPropertyChanged;
     }
 
-    [ReactiveField(AlsoNotify = new[] { nameof(FullName) })]
+    [ReactiveField(AlsoNotify = [nameof(FullName)])]
     public partial string FirstName { get; set; }
 
-    [ReactiveField(AlsoNotify = new[] { nameof(FullName) })]
+    [ReactiveField(AlsoNotify = [nameof(FullName)])]
     public partial string LastName { get; set; }
 
-    [ReactiveField(GenerateEqualityCheck = false, AlsoNotify = new[] { nameof(CounterText) })]
+    [ReactiveField(GenerateEqualityCheck = false, AlsoNotify = [nameof(CounterText)])]
     public partial int Counter { get; set; }
 
     [ReactiveField(GenerateEqualityCheck = false)]

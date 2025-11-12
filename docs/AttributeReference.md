@@ -41,7 +41,7 @@ Define assembly-wide defaults (e.g., in `AssemblyInfo.cs`) to keep behavior cons
 [ReactiveViewModel(ViewModelMember = nameof(RaiseMyPropertyChanged))]
 public partial class DocumentViewModel : ReactiveViewModelBase
 {
-    [ReactiveField(AlsoNotify = new[] { nameof(FullName) })]
+    [ReactiveField(AlsoNotify = [nameof(FullName)])]
     public partial string Title { get; set; }
 
     [ReactiveField]

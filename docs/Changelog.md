@@ -6,7 +6,7 @@ All notable changes to this project will be documented here. The format loosely 
 ### Added
 - Avalonia + ReactiveUI desktop sample showcasing generator output and cross-property notifications.
 - Project-wide README, attribute reference, contributing guide, and changelog documentation.
-- NuGet packaging metadata, icon, README, and MinVer-driven semantic versioning.
+- NuGet packaging metadata, icon, README, and shared semantic version settings.
 - GitHub Actions CI (build/test/pack/coverage) and release pipeline for automated publishing.
 - `buildTransitive` props that default consumer projects to `LangVersion=preview` (overridable via `InpcFieldGeneratorSetLangVersion=false`).
 

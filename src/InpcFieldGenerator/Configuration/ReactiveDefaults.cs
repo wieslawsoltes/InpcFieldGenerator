@@ -187,6 +187,16 @@ internal sealed record ReactiveDefaults(
         ExpressionSyntax expression,
         CancellationToken cancellationToken)
     {
+        if (expression is CollectionExpressionSyntax collectionExpression)
+        {
+            foreach (var value in EvaluateCollectionExpression(semanticModel, collectionExpression, cancellationToken))
+            {
+                yield return value;
+            }
+
+            yield break;
+        }
+
         InitializerExpressionSyntax? initializer = expression switch
         {
             ArrayCreationExpressionSyntax arrayCreation => arrayCreation.Initializer,
@@ -206,6 +216,34 @@ internal sealed record ReactiveDefaults(
                 !string.IsNullOrWhiteSpace(value))
             {
                 yield return value!;
+            }
+        }
+    }
+
+    private static IEnumerable<string> EvaluateCollectionExpression(
+        SemanticModel semanticModel,
+        CollectionExpressionSyntax collectionExpression,
+        CancellationToken cancellationToken)
+    {
+        foreach (var element in collectionExpression.Elements)
+        {
+            switch (element)
+            {
+                case ExpressionElementSyntax expressionElement:
+                    if (TryEvaluateString(semanticModel, expressionElement.Expression, cancellationToken, out var value) &&
+                        !string.IsNullOrWhiteSpace(value))
+                    {
+                        yield return value!;
+                    }
+
+                    break;
+                case SpreadElementSyntax spreadElement:
+                    foreach (var spreadValue in EvaluateStringArrayValues(semanticModel, spreadElement.Expression, cancellationToken))
+                    {
+                        yield return spreadValue;
+                    }
+
+                    break;
             }
         }
     }

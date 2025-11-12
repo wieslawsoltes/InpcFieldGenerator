@@ -29,10 +29,10 @@ The generator package sets `LangVersion=preview` automatically through its `buil
    [ReactiveViewModel(NotifyOnChanging = true)]
    public partial class PersonViewModel : ReactiveObject
    {
-       [ReactiveField(AlsoNotify = new[] { nameof(FullName) })]
+       [ReactiveField(AlsoNotify = [nameof(FullName)])]
        public partial string FirstName { get; set; }
 
-       [ReactiveField(AlsoNotify = new[] { nameof(FullName) })]
+       [ReactiveField(AlsoNotify = [nameof(FullName)])]
        public partial string LastName { get; set; }
 
        public string FullName => $"{FirstName} {LastName}".Trim();
@@ -61,7 +61,7 @@ The sample uses Avalonia + ReactiveUI to show live bindings, cross-property noti
 ## CI & releases
 - Continuous integration: [`.github/workflows/ci.yml`](.github/workflows/ci.yml) builds, tests, packs, and publishes coverage on every push and PR (Ubuntu + Windows matrix).
 - Release automation: [`.github/workflows/release.yml`](.github/workflows/release.yml) runs the full validation suite, pushes packages to NuGet when `NUGET_API_KEY` is available, and attaches artifacts to GitHub releases triggered by tags (`v*`) or manual dispatch.
-- Semantic versions are derived from git metadata via [MinVer](https://github.com/adamralph/minver); tag releases with `vX.Y.Z` to stamp final packages.
+- Packages are versioned via the shared `Directory.Build.props` settings (`VersionPrefix`/`VersionSuffix`).
 
 ## Contributing
 We welcome issues and pull requests. Please read the contributing guide before opening a PR.

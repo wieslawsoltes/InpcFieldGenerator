@@ -17,7 +17,7 @@ public static class ReactiveDefaultsTests
         const string source = """
             using InpcFieldGenerator.Abstractions;
 
-            [assembly: ReactiveFieldOption(ViewModelMember = "AssemblyChanged", NotifyOnChanging = true, GenerateEqualityCheck = false, AlsoNotify = new[] { "AssemblyProperty", "Shared" })]
+            [assembly: ReactiveFieldOption(ViewModelMember = "AssemblyChanged", NotifyOnChanging = true, GenerateEqualityCheck = false, AlsoNotify = ["AssemblyProperty", "Shared"])]
 
             namespace SampleApp;
 
@@ -55,7 +55,7 @@ public static class ReactiveDefaultsTests
         const string source = """
             using InpcFieldGenerator.Abstractions;
 
-            [assembly: ReactiveFieldOption(AlsoNotify = new[] { "Shared", "AssemblyProperty" })]
+            [assembly: ReactiveFieldOption(AlsoNotify = ["Shared", "AssemblyProperty"])]
             [assembly: ReactiveFieldOption(AlsoNotify = new[] { "AssemblyProperty", "Extra" })]
 
             namespace SampleApp;

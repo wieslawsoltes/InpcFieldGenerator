@@ -177,7 +177,7 @@ public static class InpcReactiveFieldGeneratorTests
             [ReactiveViewModel]
             public partial class PersonViewModel : ViewModelBase
             {
-                [ReactiveField(AlsoNotify = new[] { "Missing" })]
+                [ReactiveField(AlsoNotify = ["Missing"])]
                 public partial string FirstName { get; set; }
             }
             """;
@@ -204,7 +204,7 @@ public static class InpcReactiveFieldGeneratorTests
             [ReactiveViewModel]
             public partial class PersonViewModel : ViewModelBase
             {
-                [ReactiveField(NotifyOnChanging = true, AlsoNotify = new[] { "FullName" })]
+                [ReactiveField(NotifyOnChanging = true, AlsoNotify = ["FullName"])]
                 public partial string FirstName { get; set; }
 
                 public string FullName => FirstName;
